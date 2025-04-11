@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pokemon-cards.css">
+    <link rel="icon" href="assets/favicon.png" type="image/png">
+</head>
+<body>
+    <header>
+        <div class="logo">Pokédex</div>
+        <form onsubmit="searchWithExistingBar(); return false;">
+            <div class="search-container">
+                <label>
+                    <input type="text" id="search-bar" name="search-query" placeholder="Nach Pokémon suchen" style="text-align: center;">
+                </label>
+                <button id="search-button" type="submit">Suchen</button>
+            </div>
+        </form>
+    </header>
+    
+    <main>
+        <div id="loading-screen" class="loading-screen">Loading...</div>
+        <div id="error-container" class="error-message hidden"></div>
+        <div id="pokemon-container" class="pokemon-container"></div>
+        <div class="load-more-container">
+            <button id="load-more" onclick="loadMorePokemon()">Mehr Pokémon laden</button>
+        </div>
+    </main>
+    
+    <div id="pokemon-overlay" class="overlay hidden">
+        <div class="overlay-content">
+            <span class="close-btn" onclick="hideDetailView()">&times;</span>
+            <h2 class="overlay-title"></h2>
+            <img class="overlay-image" src="" alt="Pokemon">
+            <div class="overlay-details"></div>
+            <div class="overlay-nav">
+                <button id="prev-pokemon" onclick="navigatePokemon('prev')">Vorheriger</button>
+                <button id="next-pokemon" onclick="navigatePokemon('next')">Nächster</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/render.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
