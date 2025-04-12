@@ -1,7 +1,7 @@
 const API_URL = 'https://pokeapi.co/api/v2/pokemon/';
 let currentOffset = 0;
 const POKEMON_PER_PAGE = 20;
-
+let allPokemonNames = [];
 
 async function getData(requestedObject) {
     try {
@@ -43,7 +43,6 @@ async function loadInitialPokemon() {
     }
 }
 
-
 async function loadMorePokemon() {
     try {
         const loadMoreButton = document.getElementById('load-more');
@@ -71,7 +70,6 @@ async function loadMorePokemon() {
 }
 
 async function loadPokemonDetails(pokemonList) {
-    
     try {
         const pokemonPromises = pokemonList.map(pokemon => {
             return fetch(pokemon.url)
@@ -91,7 +89,6 @@ async function loadPokemonDetails(pokemonList) {
     }
 }
 
-
 async function fetchPokemonDetails(pokemonId) {
     try {
         const response = await fetch(`${API_URL}${pokemonId}`);
@@ -101,4 +98,32 @@ async function fetchPokemonDetails(pokemonId) {
         console.error('Error fetching Pokémon details:', error);
         throw error;
     }
+}
+
+async function fetchAllPokemonNames() {
+    try {
+        // Fetch the first 1000 Pokémon (adjust if needed)
+        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1000');
+        if (!response.ok) throw new Error('Failed to load Pokémon names');
+        
+        const data = await response.json();
+        
+        // Extract just the names from the results
+        allPokemonNames = data.results.map(pokemon => {
+            return {
+                name: formatPokemonName(pokemon.name),
+                id: extractPokemonId(pokemon.url)
+            };
+        });
+        
+    } catch (error) {
+        console.error('Error fetching Pokémon names:', error);
+    }
+}
+
+// Helper function to extract Pokémon ID from URL
+function extractPokemonId(url) {
+    // URL format is like https://pokeapi.co/api/v2/pokemon/25/
+    const parts = url.split('/');
+    return parts[parts.length - 2];
 }
