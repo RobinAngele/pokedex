@@ -2,14 +2,10 @@ document.addEventListener('DOMContentLoaded', function() {
     initPokedex();
 });
 
-
 function initPokedex() {
     fetchAllPokemonNames();
-    
     loadInitialPokemon();
-    
     setupSearch();
-    
     setupOverlay();
 }
 
@@ -17,80 +13,115 @@ function setupSearch() {
     const searchInput = document.getElementById('search-bar');
     const suggestionsContainer = document.getElementById('search-suggestions');
     
-    if (searchInput) {
-        fetchAllPokemonNames();
-        
-        searchInput.addEventListener('input', function() {
-            const searchText = this.value.trim().toLowerCase();
-            
-            suggestionsContainer.innerHTML = '';
-            
-            if (searchText.length < 1) {
-                suggestionsContainer.classList.remove('active');
-                return;
-            }
-            
-            const matchingPokemon = allPokemonNames.filter(pokemon => 
-                pokemon.name.toLowerCase().startsWith(searchText)
-            );
-            
-            const suggestionsToShow = matchingPokemon.slice(0, 10);
-            
-            if (suggestionsToShow.length > 0) {
-                suggestionsToShow.forEach(pokemon => {
-                    const suggestionItem = document.createElement('div');
-                    suggestionItem.className = 'suggestion-item';
-                    suggestionItem.textContent = pokemon.name;
-                    
-                    suggestionItem.addEventListener('click', function() {
-                        searchInput.value = pokemon.name;
-                        suggestionsContainer.classList.remove('active');
-                        getData(pokemon.id);
-                    });
-                    
-                    suggestionsContainer.appendChild(suggestionItem);
-                });
-                
-                suggestionsContainer.classList.add('active');
-            } else {
-                suggestionsContainer.classList.remove('active');
-            }
-        });
-        
-        document.addEventListener('click', function(e) {
-            if (e.target !== searchInput && e.target !== suggestionsContainer) {
-                suggestionsContainer.classList.remove('active');
-            }
-        });
-        
-        searchInput.addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                suggestionsContainer.classList.remove('active');
-                searchWithExistingBar();
-            }
-        });
+    if (!searchInput) return;
+    
+    setupSearchInput(searchInput, suggestionsContainer);
+    setupDocumentClickHandler(searchInput, suggestionsContainer);
+    setupEnterKeyHandler(searchInput, suggestionsContainer);
+}
+
+function setupSearchInput(searchInput, suggestionsContainer) {
+    searchInput.addEventListener('input', function() {
+        const searchText = this.value.trim().toLowerCase();
+        handleSearchInputChange(searchText, suggestionsContainer);
+    });
+}
+
+function handleSearchInputChange(searchText, suggestionsContainer) {
+    suggestionsContainer.innerHTML = '';
+    
+    if (searchText.length < 1) {
+        suggestionsContainer.classList.remove('active');
+        return;
     }
+    
+    const matchingPokemon = findMatchingPokemon(searchText);
+    displaySuggestions(matchingPokemon, suggestionsContainer);
+}
+
+function findMatchingPokemon(searchText) {
+    return allPokemonNames.filter(pokemon => 
+        pokemon.name.toLowerCase().startsWith(searchText)
+    ).slice(0, 10);
+}
+
+function displaySuggestions(pokemonList, suggestionsContainer) {
+    if (pokemonList.length > 0) {
+        pokemonList.forEach(pokemon => {
+            createSuggestionItem(pokemon, suggestionsContainer);
+        });
+        suggestionsContainer.classList.add('active');
+    } else {
+        suggestionsContainer.classList.remove('active');
+    }
+}
+
+function createSuggestionItem(pokemon, suggestionsContainer) {
+    const suggestionItem = document.createElement('div');
+    suggestionItem.className = 'suggestion-item';
+    suggestionItem.textContent = pokemon.name;
+    
+    attachSuggestionClickHandler(suggestionItem, pokemon);
+    suggestionsContainer.appendChild(suggestionItem);
+}
+
+function attachSuggestionClickHandler(suggestionItem, pokemon) {
+    suggestionItem.addEventListener('click', function() {
+        selectSuggestion(pokemon);
+    });
+}
+
+function selectSuggestion(pokemon) {
+    const searchInput = document.getElementById('search-bar');
+    const suggestionsContainer = document.getElementById('search-suggestions');
+    
+    searchInput.value = pokemon.name;
+    suggestionsContainer.classList.remove('active');
+    getData(pokemon.id);
+}
+
+function setupDocumentClickHandler(searchInput, suggestionsContainer) {
+    document.addEventListener('click', function(e) {
+        if (e.target !== searchInput && e.target !== suggestionsContainer) {
+            suggestionsContainer.classList.remove('active');
+        }
+    });
+}
+
+function setupEnterKeyHandler(searchInput, suggestionsContainer) {
+    searchInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            suggestionsContainer.classList.remove('active');
+            searchWithExistingBar();
+        }
+    });
 }
 
 function searchWithExistingBar() {
     const searchInput = document.getElementById('search-bar');
     const searchTerm = searchInput.value.trim().toLowerCase();
-    const pokemonContainer = document.getElementById('pokemon-container');
     
-    if (searchTerm.length != 0) {
-        pokemonContainer.innerHTML = '';
-        
-        currentOffset = 0;
-        
-        const matchingPokemon = allPokemonNames.find(pokemon => 
-            pokemon.name.toLowerCase() === searchTerm
-        );
-        
-        if (matchingPokemon) {
-            getData(matchingPokemon.id);
-        } else {
-            getData(searchTerm);
-        }
+    if (searchTerm.length === 0) return;
+    
+    resetSearchState();
+    performSearch(searchTerm);
+}
+
+function resetSearchState() {
+    const pokemonContainer = document.getElementById('pokemon-container');
+    pokemonContainer.innerHTML = '';
+    currentOffset = 0;
+}
+
+function performSearch(searchTerm) {
+    const matchingPokemon = allPokemonNames.find(pokemon => 
+        pokemon.name.toLowerCase() === searchTerm
+    );
+    
+    if (matchingPokemon) {
+        getData(matchingPokemon.id);
+    } else {
+        getData(searchTerm);
     }
 }
 
@@ -98,10 +129,14 @@ function setupOverlay() {
     const overlay = document.getElementById('pokemon-overlay');
     
     if (overlay) {
-        overlay.addEventListener('click', function(event) {
-            if (event.target === overlay) {
-                hideDetailView();
-            }
-        });
-    } 
+        attachOverlayClickHandler(overlay);
+    }
+}
+
+function attachOverlayClickHandler(overlay) {
+    overlay.addEventListener('click', function(event) {
+        if (event.target === overlay) {
+            hideDetailView();
+        }
+    });
 }
