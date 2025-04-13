@@ -15,7 +15,7 @@ async function getData(requestedObject) {
         }
         
         let pokemonData = await response.json();
-        renderPokemon(pokemonData);
+        renderPokemon(pokemonData, true);
     } catch (error) {
         showErrorMessage(error.message);
     } finally {
@@ -102,28 +102,30 @@ async function fetchPokemonDetails(pokemonId) {
 
 async function fetchAllPokemonNames() {
     try {
-        // Fetch the first 1000 Pokémon (adjust if needed)
-        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1000');
+        const countResponse = await fetch(`${API_URL}`);
+        if (!countResponse.ok) throw new Error('Failed to fetch Pokémon count');
+        
+        const countData = await countResponse.json();
+        const totalCount = countData.count;
+        
+        const response = await fetch(`${API_URL}?limit=${totalCount}`);
         if (!response.ok) throw new Error('Failed to load Pokémon names');
         
         const data = await response.json();
         
-        // Extract just the names from the results
         allPokemonNames = data.results.map(pokemon => {
             return {
                 name: formatPokemonName(pokemon.name),
                 id: extractPokemonId(pokemon.url)
             };
         });
-        
+                
     } catch (error) {
         console.error('Error fetching Pokémon names:', error);
     }
 }
 
-// Helper function to extract Pokémon ID from URL
 function extractPokemonId(url) {
-    // URL format is like https://pokeapi.co/api/v2/pokemon/25/
     const parts = url.split('/');
     return parts[parts.length - 2];
 }

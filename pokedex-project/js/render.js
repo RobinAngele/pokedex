@@ -1,5 +1,4 @@
-
-function renderPokemon(pokemonData) {
+function renderPokemon(pokemonData, replace = false) {
     const pokemonContainer = document.getElementById('pokemon-container');
     if (!pokemonContainer) {
         return;
@@ -7,8 +6,11 @@ function renderPokemon(pokemonData) {
     
     const htmlString = createPokemonCardHTML(pokemonData);
     
-    const currentHTML = pokemonContainer.innerHTML;
-    pokemonContainer.innerHTML = currentHTML + htmlString;
+    if (replace || pokemonContainer.innerHTML.trim() === '') {
+        pokemonContainer.innerHTML = htmlString;
+    } else {
+        pokemonContainer.innerHTML += htmlString;
+    }
     
     attachCardClickHandlers();
 }
