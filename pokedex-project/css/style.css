@@ -343,6 +343,16 @@ button:disabled {
 .fairy { background-color: #ee99ac; }
 .normal { background-color: #a8a878; }
 
+
+@media (max-width: 470px) {
+
+    .overlay-header {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+}
+
 @media (max-width: 768px) {
     .overlay-nav {
         flex-direction: column;
