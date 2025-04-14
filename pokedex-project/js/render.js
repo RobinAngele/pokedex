@@ -164,8 +164,17 @@ function createDetailsHTML(pokemon, abilitiesText) {
 
 function setupNavigationButtons(pokemon) {
     const prevButton = document.getElementById('prev-pokemon');
+    
     if (prevButton) {
+        // Set the data ID for navigation
         prevButton.setAttribute('data-id', pokemon.id > 1 ? pokemon.id - 1 : 1);
+        
+        // Hide the button if we're on the first Pokémon
+        if (pokemon.id <= 1) {
+            prevButton.style.display = 'none';
+        } else {
+            prevButton.style.display = ''; // Reset to default display value
+        }
     }
     
     const nextButton = document.getElementById('next-pokemon');
