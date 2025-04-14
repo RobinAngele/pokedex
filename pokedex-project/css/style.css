@@ -227,6 +227,42 @@ header {
     cursor: pointer;
 }
 
+/* Container for the close button at the top */
+.close-container {
+  display: flex;
+  justify-content: flex-end; /* Positions close button at right */
+  margin-bottom: 10px;
+}
+
+.close-btn {
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 5px;
+}
+
+/* Update overlay header style for navigation */
+.overlay-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Spreads items evenly */
+  margin-bottom: 15px;
+}
+
+/* Remove absolute positioning from title */
+.overlay-title {
+  margin: 0;
+  text-align: center;
+  position: static; /* Remove absolute positioning */
+  transform: none; /* Remove transform */
+  flex-grow: 1; /* Allow title to take available space */
+}
+
+/* You can remove or comment out the next-button-container styles */
+/* .next-button-container {
+  display: none;
+} */
+
 .overlay-nav {
     display: flex;
     justify-content: space-between; /* Distributes items at the ends */

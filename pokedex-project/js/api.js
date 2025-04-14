@@ -7,7 +7,7 @@ async function getData(requestedObject) {
     try {
         showLoadingScreen();
         const pokemonData = await fetchPokemonData(requestedObject);
-        renderPokemon(pokemonData, true);
+        renderPokemon(pokemonData, true); // true indicates single Pokémon view
     } catch (error) {
         showErrorMessage(error.message);
     } finally {
@@ -84,7 +84,7 @@ async function loadPokemonDetails(pokemonList) {
         const pokemonData = await Promise.all(pokemonPromises);
         renderPokemonCollection(pokemonData);
     } catch (error) {
-        showErrorMessage("Failed to load Pokemon details");
+        showErrorMessage("Failed to load Pokémon details");
     }
 }
 
