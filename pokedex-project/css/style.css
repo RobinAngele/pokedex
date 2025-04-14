@@ -6,14 +6,12 @@ body {
     color: #333;
 }
 
-
 @font-face {
     font-family: 'Pokemon Solid';
     src: url('../assets/Pokemon Solid.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
-
 
 header {
     background-color: #ffcc00;
@@ -31,7 +29,6 @@ header {
     letter-spacing: 2px;
     margin-bottom: 15px;
 }
-
 
 .search-container {
     display: flex;
@@ -53,9 +50,6 @@ header {
     overflow: hidden;
 }
 
-
-
-
 #search-button {
     padding: 10px 15px;
     background: #e63900;
@@ -66,7 +60,6 @@ header {
     font-size: 15px;
 }
 
-/* Autocomplete dropdown styling */
 .search-suggestions {
     display: none;
     position: absolute;
@@ -95,7 +88,6 @@ header {
     background-color: #f0f0f0;
 }
 
-
 .pokemon-container {
     display: flex;
     flex-wrap: wrap;
@@ -103,7 +95,6 @@ header {
     padding: 20px;
 }
 
-/* Loading Screen with Pokéball Spinner */
 .loading-screen {
     display: none;
     position: fixed;
@@ -143,11 +134,9 @@ header {
     }
 }
 
-
 .hidden {
     display: none !important;
 }
-
 
 .error-message {
     background-color: #ff6b6b;
@@ -158,7 +147,6 @@ header {
     max-width: 80%;
     border-radius: 4px;
 }
-
 
 .load-more-container {
     text-align: center;
@@ -184,7 +172,6 @@ header {
     cursor: not-allowed;
 }
 
-
 .overlay {
     position: fixed;
     top: 0;
@@ -205,6 +192,7 @@ header {
 .overlay-content {
     background-color: white;
     padding: min(5vw, 20px);
+    padding-top: 5px;
     border-radius: 8px;
     width: min(95%, 500px);
     max-height: 90vh;
@@ -219,72 +207,88 @@ header {
     margin: 0 auto;
 }
 
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-/* Container for the close button at the top */
 .close-container {
   display: flex;
-  justify-content: flex-end; /* Positions close button at right */
-  margin-bottom: 10px;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+  width: 100%;
 }
 
 .close-btn {
-  font-size: 24px;
+  font-size: 28px;
   cursor: pointer;
   line-height: 1;
   padding: 0 5px;
+  transition: transform 0.2s, color 0.2s;
+  position: static;
 }
 
-/* Update overlay header style for navigation */
+.close-btn:hover {
+  transform: scale(1.1);
+  color: #e63900;
+}
 .overlay-header {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Spreads items evenly */
-  margin-bottom: 15px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  width: 100%;
 }
 
-/* Remove absolute positioning from title */
 .overlay-title {
   margin: 0;
   text-align: center;
-  position: static; /* Remove absolute positioning */
-  transform: none; /* Remove transform */
-  flex-grow: 1; /* Allow title to take available space */
+  flex-grow: 1;
+  padding: 0 10px;
+  font-size: 1.4rem;
 }
-
-/* You can remove or comment out the next-button-container styles */
-/* .next-button-container {
-  display: none;
-} */
-
+#prev-pokemon, #next-pokemon {
+  padding: 8px 15px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s, transform 0.2s;
+  font-weight: bold;
+  flex-shrink: 0;
+}
 .overlay-nav {
-    display: flex;
-    justify-content: space-between; /* Distributes items at the ends */
-    margin-top: 20px;
-    width: 100%;
+  display: none;
 }
 
-/* Style for the Previous button - always on the left */
-#prev-pokemon {
-    margin-right: auto; /* Pushes the button to the left */
+#back-button {
+    padding: 10px 20px;
+    background-color: #e63900;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s, transform 0.2s;
+    margin-top: 10px;
 }
 
-/* Style for the Next button - always on the right */
-#next-pokemon {
-    margin-left: auto; /* Pushes the button to the right */
+#back-button:hover {
+    background-color: #c33100;
+    transform: scale(1.05);
 }
 
-/* Important: When prev button is hidden, maintain layout */
+button:disabled {
+    background-color: #95a5a6 !important;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+#back-button::before {
+    content: "←  ";
+    font-weight: bold;
+}
+
 .overlay-nav:has(#prev-pokemon[style*="display: none"]) {
-    justify-content: flex-end; /* Aligns next button to the right when prev is hidden */
+    justify-content: flex-end; 
 }
-
 
 .stats {
     margin-top: 15px;
@@ -292,17 +296,17 @@ header {
 
 .stat-row {
     display: flex;
-    flex-direction: column; /* Changed from row to column */
-    align-items: flex-start; /* Align items to the left */
+    flex-direction: column; 
+    align-items: flex-start;
     margin-bottom: 15px;
 }
 
 .stat-bar {
-    width: 100%; /* Make bar full width */
+    width: 100%;
     height: 10px;
     background-color: #eee;
     border-radius: 5px;
-    margin: 5px 0; /* Change horizontal margins to vertical */
+    margin: 5px 0; 
     overflow: hidden;
 }
 
@@ -319,7 +323,6 @@ header {
 .details-section h3 {
     margin-bottom: 10px;
 }
-
 
 .fire { background-color: #f08030; }
 .water { background-color: #6890f0; }
@@ -339,7 +342,6 @@ header {
 .steel { background-color: #b8b8d0; }
 .fairy { background-color: #ee99ac; }
 .normal { background-color: #a8a878; }
-
 
 @media (max-width: 768px) {
     .overlay-nav {

@@ -1,60 +1,45 @@
 function renderPokemon(pokemonData, replace = false) {
-    const pokemonContainer = document.getElementById('pokemon-container');
-    if (!pokemonContainer) return;
-    
-    const htmlString = createPokemonCardHTML(pokemonData);
-    
-    if (replace || pokemonContainer.innerHTML.trim() === '') {
-        pokemonContainer.innerHTML = htmlString;
+    const container = document.getElementById('pokemon-container');
+    if (!container) return;
+    const html = createPokemonCardHTML(pokemonData);
+    if (replace || container.innerHTML.trim() === '') {
+        container.innerHTML = html;
     } else {
-        pokemonContainer.innerHTML += htmlString;
+        container.innerHTML += html;
     }
-    
     attachCardClickHandlers();
-    
-    // Check card count after rendering
     setTimeout(checkCardCountAndToggleButtons, 100);
 }
 
 function attachCardClickHandlers() {
     const cards = document.getElementsByClassName('pokemon-card');
-    
     for (let i = 0; i < cards.length; i++) {
         const card = cards[i];
-        const pokemonId = card.getAttribute('data-id');
-        
+        const id = card.getAttribute('data-id');
         card.onclick = null;
         card.onclick = function() {
-            openDetailView(pokemonId);
+            openDetailView(id);
         };
     }
 }
 
 function createPokemonCardHTML(pokemon) {
     const mainType = pokemon.types[0].type.name;
-    const backgroundColor = getTypeColor(mainType);
+    const bgColor = getTypeColor(mainType);
     const typesHtml = createTypesHTML(pokemon.types);
-    const pokemonId = pokemon.id.toString().padStart(3, '0');
-    const pokemonName = formatPokemonName(pokemon.name);
-    const imageUrl = getPokemonImageUrl(pokemon);
-    
-    return `
-        <div class="pokemon-card" data-id="${pokemon.id}" style="background-color: ${backgroundColor}">
-            <div class="pokemon-id">#${pokemonId}</div>
-            <div class="pokemon-name">${pokemonName}</div>
-            <div class="pokemon-types">${typesHtml}</div>
-            <img class="pokemon-image" src="${imageUrl}" alt="${pokemon.name}">
-        </div>
-    `;
+    const id = pokemon.id.toString().padStart(3, '0');
+    const name = formatPokemonName(pokemon.name);
+    const img = getPokemonImageUrl(pokemon);
+    return createPokemonCardHTMLtemplate(pokemon, bgColor, id, name, typesHtml, img);
 }
 
 function createTypesHTML(types) {
-    let typesHtml = '';
+    let html = '';
     for (let i = 0; i < types.length; i++) {
         const type = types[i].type.name;
-        typesHtml += `<span class="type ${type}">${type}</span>`;
+        html += createTypesHTMLtemplate(type);
     }
-    return typesHtml;
+    return html;
 }
 
 function getPokemonImageUrl(pokemon) {
@@ -62,22 +47,19 @@ function getPokemonImageUrl(pokemon) {
            pokemon.sprites.front_default;
 }
 
-async function openDetailView(pokemonId) {
+async function openDetailView(id) {
     try {
         showLoadingScreen();
-        const pokemon = await fetchPokemonDetails(pokemonId);
-        
+        const pokemon = await fetchPokemonDetails(id);
         const overlay = document.getElementById('pokemon-overlay');
         if (!overlay) {
             hideLoadingScreen();
             return;
         }
-        
         updateOverlayTitle(overlay, pokemon);
         updateOverlayImage(overlay, pokemon);
         updateOverlayDetails(overlay, pokemon);
         setupNavigationButtons(pokemon);
-        
         overlay.className = "overlay";
         hideLoadingScreen();
     } catch (error) {
@@ -88,101 +70,76 @@ async function openDetailView(pokemonId) {
 }
 
 function updateOverlayTitle(overlay, pokemon) {
-    const titleElements = overlay.getElementsByClassName('overlay-title');
-    const formattedTitle = `${formatPokemonName(pokemon.name)} #${pokemon.id.toString().padStart(3, '0')}`;
-    
-    for (let i = 0; i < titleElements.length; i++) {
-        titleElements[i].textContent = formattedTitle;
+    const titles = overlay.getElementsByClassName('overlay-title');
+    const title = `${formatPokemonName(pokemon.name)} #${pokemon.id.toString().padStart(3, '0')}`;
+    for (let i = 0; i < titles.length; i++) {
+        titles[i].textContent = title;
     }
 }
 
 function updateOverlayImage(overlay, pokemon) {
-    const imageElements = overlay.getElementsByClassName('overlay-image');
-    const imageUrl = getPokemonImageUrl(pokemon);
-    
-    for (let i = 0; i < imageElements.length; i++) {
-        imageElements[i].src = imageUrl;
-        imageElements[i].alt = pokemon.name;
+    const images = overlay.getElementsByClassName('overlay-image');
+    const src = getPokemonImageUrl(pokemon);
+    for (let i = 0; i < images.length; i++) {
+        images[i].src = src;
+        images[i].alt = pokemon.name;
     }
 }
 
 function updateOverlayDetails(overlay, pokemon) {
-    const detailsElements = overlay.getElementsByClassName('overlay-details');
-    
-    for (let i = 0; i < detailsElements.length; i++) {
+    const details = overlay.getElementsByClassName('overlay-details');
+    for (let i = 0; i < details.length; i++) {
         const statsHtml = createStatsHTML(pokemon.stats);
         const abilitiesText = createAbilitiesText(pokemon.abilities);
         const detailsHtml = createDetailsHTML(pokemon, abilitiesText);
-        
-        detailsElements[i].innerHTML = statsHtml + detailsHtml;
+        details[i].innerHTML = statsHtml + detailsHtml;
     }
 }
 
 function createStatsHTML(stats) {
-    let statsHtml = '<div class="stats"><h3>Base Stats</h3>';
-    
+    let statsRows = '';
     for (let j = 0; j < stats.length; j++) {
         const stat = stats[j];
-        const statName = formatStatName(stat.stat.name);
-        const statValue = stat.base_stat;
-        const fillWidth = Math.min(100, statValue);
-        
-        statsHtml += `
-            <div class="stat-row">
-                <span>${statName}</span>
-                <div class="stat-bar">
-                    <div class="stat-fill" style="width: ${fillWidth}%"></div>
-                </div>
-                <span>${statValue}</span>
-            </div>
-        `;
+        const name = formatStatName(stat.stat.name);
+        const value = stat.base_stat;
+        const width = Math.min(100, value);
+        statsRows += createStatRowHTMLtemplate(name, value, width);
     }
-    
-    return statsHtml + '</div>';
+    return createStatsHTMLtemplate(statsRows);
 }
 
 function createAbilitiesText(abilities) {
-    let abilitiesText = '';
-    
+    let text = '';
     for (let j = 0; j < abilities.length; j++) {
-        abilitiesText += formatPokemonName(abilities[j].ability.name);
+        text += formatPokemonName(abilities[j].ability.name);
         if (j < abilities.length - 1) {
-            abilitiesText += ', ';
+            text += ', ';
         }
     }
-    
-    return abilitiesText;
+    return text;
 }
 
 function createDetailsHTML(pokemon, abilitiesText) {
-    return `
-        <div class="details-section">
-            <h3>Details</h3>
-            <p>Height: ${pokemon.height / 10} m</p>
-            <p>Weight: ${pokemon.weight / 10} kg</p>
-            <p>Abilities: ${abilitiesText}</p>
-        </div>
-    `;
+    return createDetailsHTMLtemplate(
+        pokemon.height / 10,
+        pokemon.weight / 10,
+        abilitiesText
+    );
 }
 
 function setupNavigationButtons(pokemon) {
-    const prevButton = document.getElementById('prev-pokemon');
-    
-    if (prevButton) {
-        // Set the data ID for navigation
-        prevButton.setAttribute('data-id', pokemon.id > 1 ? pokemon.id - 1 : 1);
-        
-        // Hide the button if we're on the first Pokémon
+    const prevBtn = document.getElementById('prev-pokemon');
+    if (prevBtn) {
+        prevBtn.setAttribute('data-id', pokemon.id > 1 ? pokemon.id - 1 : 1);
         if (pokemon.id <= 1) {
-            prevButton.style.display = 'none';
+            prevBtn.style.display = 'none';
         } else {
-            prevButton.style.display = ''; // Reset to default display value
+            prevBtn.style.display = '';
         }
     }
-    
-    const nextButton = document.getElementById('next-pokemon');
-    if (nextButton) {
-        nextButton.setAttribute('data-id', pokemon.id + 1);
+    const nextBtn = document.getElementById('next-pokemon');
+    if (nextBtn) {
+        nextBtn.setAttribute('data-id', pokemon.id + 1);
     }
 }
 
@@ -194,12 +151,10 @@ function hideDetailView() {
 }
 
 function navigatePokemon(direction) {
-    const buttonId = direction + '-pokemon';
-    const button = document.getElementById(buttonId);
-    
-    if (button) {
-        const pokemonId = button.getAttribute('data-id');
+    const btn = document.getElementById(direction + '-pokemon');
+    if (btn) {
+        const id = btn.getAttribute('data-id');
         hideDetailView();
-        openDetailView(pokemonId);
+        openDetailView(id);
     }
 }

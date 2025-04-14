@@ -1,6 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
-    initPokedex();
-});
+document.addEventListener('DOMContentLoaded', () => initPokedex());
 
 function initPokedex() {
     fetchAllPokemonNames();
@@ -12,168 +10,133 @@ function initPokedex() {
 function setupSearch() {
     const searchInput = document.getElementById('search-bar');
     const suggestionsContainer = document.getElementById('search-suggestions');
-    
     if (!searchInput) return;
-    
     setupSearchInput(searchInput, suggestionsContainer);
     setupDocumentClickHandler(searchInput, suggestionsContainer);
     setupEnterKeyHandler(searchInput, suggestionsContainer);
 }
 
-function setupSearchInput(searchInput, suggestionsContainer) {
-    searchInput.addEventListener('input', function() {
-        const searchText = this.value.trim().toLowerCase();
-        handleSearchInputChange(searchText, suggestionsContainer);
+function setupSearchInput(input, container) {
+    input.addEventListener('input', function() {
+        handleSearchInputChange(this.value.trim().toLowerCase(), container);
     });
 }
 
-function handleSearchInputChange(searchText, suggestionsContainer) {
-    suggestionsContainer.innerHTML = '';
-    
-    if (searchText.length < 1) {
-        suggestionsContainer.classList.remove('active');
+function handleSearchInputChange(text, container) {
+    container.innerHTML = '';
+    if (text.length < 1) {
+        container.classList.remove('active');
         return;
     }
-    
-    const matchingPokemon = findMatchingPokemon(searchText);
-    displaySuggestions(matchingPokemon, suggestionsContainer);
+    const matches = findMatchingPokemon(text);
+    displaySuggestions(matches, container);
 }
 
-function findMatchingPokemon(searchText) {
-    return allPokemonNames.filter(pokemon => 
-        pokemon.name.toLowerCase().startsWith(searchText)
-    ).slice(0, 10);
+function findMatchingPokemon(text) {
+    return allPokemonNames.filter(p => p.name.toLowerCase().startsWith(text)).slice(0, 10);
 }
 
-function displaySuggestions(pokemonList, suggestionsContainer) {
-    if (pokemonList.length > 0) {
-        pokemonList.forEach(pokemon => {
-            createSuggestionItem(pokemon, suggestionsContainer);
-        });
-        suggestionsContainer.classList.add('active');
+function displaySuggestions(list, container) {
+    if (list.length > 0) {
+        list.forEach(p => createSuggestionItem(p, container));
+        container.classList.add('active');
     } else {
-        suggestionsContainer.classList.remove('active');
+        container.classList.remove('active');
     }
 }
 
-function createSuggestionItem(pokemon, suggestionsContainer) {
-    const suggestionItem = document.createElement('div');
-    suggestionItem.className = 'suggestion-item';
-    suggestionItem.textContent = pokemon.name;
-    
-    attachSuggestionClickHandler(suggestionItem, pokemon);
-    suggestionsContainer.appendChild(suggestionItem);
+function createSuggestionItem(pokemon, container) {
+    const item = document.createElement('div');
+    item.className = 'suggestion-item';
+    item.textContent = pokemon.name;
+    attachSuggestionClickHandler(item, pokemon);
+    container.appendChild(item);
 }
 
-function attachSuggestionClickHandler(suggestionItem, pokemon) {
-    suggestionItem.addEventListener('click', function() {
-        selectSuggestion(pokemon);
-    });
+function attachSuggestionClickHandler(item, pokemon) {
+    item.addEventListener('click', () => selectSuggestion(pokemon));
 }
 
 function selectSuggestion(pokemon) {
-    const searchInput = document.getElementById('search-bar');
-    const suggestionsContainer = document.getElementById('search-suggestions');
-    
-    searchInput.value = pokemon.name;
-    suggestionsContainer.classList.remove('active');
+    const input = document.getElementById('search-bar');
+    const container = document.getElementById('search-suggestions');
+    input.value = pokemon.name;
+    container.classList.remove('active');
     getData(pokemon.id);
 }
 
-function setupDocumentClickHandler(searchInput, suggestionsContainer) {
-    document.addEventListener('click', function(e) {
-        if (e.target !== searchInput && e.target !== suggestionsContainer) {
-            suggestionsContainer.classList.remove('active');
+function setupDocumentClickHandler(input, container) {
+    document.addEventListener('click', e => {
+        if (e.target !== input && e.target !== container) {
+            container.classList.remove('active');
         }
     });
 }
 
-function setupEnterKeyHandler(searchInput, suggestionsContainer) {
-    searchInput.addEventListener('keyup', function(event) {
-        if (event.key === 'Enter') {
-            suggestionsContainer.classList.remove('active');
+function setupEnterKeyHandler(input, container) {
+    input.addEventListener('keyup', e => {
+        if (e.key === 'Enter') {
+            container.classList.remove('active');
             searchWithExistingBar();
         }
     });
 }
 
 function searchWithExistingBar() {
-    const searchInput = document.getElementById('search-bar');
-    const searchTerm = searchInput.value.trim().toLowerCase();
-    
-    if (searchTerm.length === 0) return;
-    
+    const input = document.getElementById('search-bar');
+    const term = input.value.trim().toLowerCase();
+    if (term.length === 0) return;
     resetSearchState();
-    performSearch(searchTerm);
+    performSearch(term);
 }
 
 function resetSearchState() {
-    const pokemonContainer = document.getElementById('pokemon-container');
-    pokemonContainer.innerHTML = '';
+    const container = document.getElementById('pokemon-container');
+    container.innerHTML = '';
     currentOffset = 0;
 }
 
-function performSearch(searchTerm) {
-    const matchingPokemon = allPokemonNames.find(pokemon => 
-        pokemon.name.toLowerCase() === searchTerm
-    );
-    
-    if (matchingPokemon) {
-        getData(matchingPokemon.id);
+function performSearch(term) {
+    const match = allPokemonNames.find(p => p.name.toLowerCase() === term);
+    if (match) {
+        getData(match.id);
     } else {
-        getData(searchTerm);
+        getData(term);
     }
 }
 
 function setupOverlay() {
     const overlay = document.getElementById('pokemon-overlay');
-    
     if (overlay) {
         attachOverlayClickHandler(overlay);
     }
 }
 
 function attachOverlayClickHandler(overlay) {
-    overlay.addEventListener('click', function(event) {
-        if (event.target === overlay) {
-            hideDetailView();
-        }
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) hideDetailView();
     });
 }
 
-/**
- * Checks number of cards and toggles appropriate buttons
- */
 function checkCardCountAndToggleButtons() {
-    const pokemonCards = document.querySelectorAll('.pokemon-card');
-    const loadMoreButton = document.getElementById('load-more');
-    const backButton = document.getElementById('back-button');
-    
-    if (!loadMoreButton || !backButton) return;
-    
-    // If only one card, we're showing a single Pokémon from search
-    if (pokemonCards.length === 1) {
-        loadMoreButton.classList.add('hidden');
-        backButton.classList.remove('hidden');
+    const cards = document.querySelectorAll('.pokemon-card');
+    const loadMore = document.getElementById('load-more');
+    const back = document.getElementById('back-button');
+    if (!loadMore || !back) return;
+    if (cards.length === 1) {
+        loadMore.classList.add('hidden');
+        back.classList.remove('hidden');
     } else {
-        // Multiple cards, show load more button
-        loadMoreButton.classList.remove('hidden');
-        backButton.classList.add('hidden');
+        loadMore.classList.remove('hidden');
+        back.classList.add('hidden');
     }
 }
 
-/**
- * Reset view to show all Pokémon
- */
 function resetToInitialView() {
-    // Clear container and reset search
-    const pokemonContainer = document.getElementById('pokemon-container');
-    const searchInput = document.getElementById('search-bar');
-    
-    if (pokemonContainer) pokemonContainer.innerHTML = '';
-    if (searchInput) searchInput.value = '';
-    
-    // Reset offset and load initial Pokémon
+    const container = document.getElementById('pokemon-container');
+    const input = document.getElementById('search-bar');
+    if (container) container.innerHTML = '';
+    if (input) input.value = '';
     currentOffset = 0;
     loadInitialPokemon();
 }

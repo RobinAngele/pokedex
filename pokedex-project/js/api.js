@@ -3,11 +3,11 @@ let currentOffset = 0;
 const POKEMON_PER_PAGE = 20;
 let allPokemonNames = [];
 
-async function getData(requestedObject) {
+async function getData(obj) {
     try {
         showLoadingScreen();
-        const pokemonData = await fetchPokemonData(requestedObject);
-        renderPokemon(pokemonData, true); // true indicates single Pokémon view
+        const data = await fetchPokemonData(obj);
+        renderPokemon(data, true);
     } catch (error) {
         showErrorMessage(error.message);
     } finally {
@@ -15,14 +15,9 @@ async function getData(requestedObject) {
     }
 }
 
-async function fetchPokemonData(requestedObject) {
-    const url = `${API_URL}${requestedObject}`;
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-        throw new Error('Pokémon not found');
-    }
-    
+async function fetchPokemonData(obj) {
+    const response = await fetch(`${API_URL}${obj}`);
+    if (!response.ok) throw new Error('Pokémon not found');
     return await response.json();
 }
 
@@ -44,9 +39,7 @@ async function fetchAndRenderPokemon(offset) {
 
 async function fetchPokemonBatch(offset) {
     const response = await fetch(`${API_URL}?limit=${POKEMON_PER_PAGE}&offset=${offset}`);
-    
     if (!response.ok) throw new Error('Failed to load Pokémon');
-    
     return await response.json();
 }
 
@@ -63,8 +56,8 @@ async function loadMorePokemon() {
 }
 
 function disableLoadMoreButton(disabled) {
-    const loadMoreButton = document.getElementById('load-more');
-    if (loadMoreButton) loadMoreButton.disabled = disabled;
+    const btn = document.getElementById('load-more');
+    if (btn) btn.disabled = disabled;
 }
 
 function handleMorePokemonError(error) {
@@ -78,37 +71,27 @@ function handlePokemonLoadError(error) {
     hideLoadingScreen();
 }
 
-async function loadPokemonDetails(pokemonList) {
+async function loadPokemonDetails(list) {
     try {
-        const pokemonPromises = createPokemonPromises(pokemonList);
-        const pokemonData = await Promise.all(pokemonPromises);
-        renderPokemonCollection(pokemonData);
+        const promises = list.map(p => {
+            return fetch(p.url)
+                .then(res => {
+                    if (!res.ok) throw new Error(`Failed to load ${p.name}`);
+                    return res.json();
+                });
+        });
+        const data = await Promise.all(promises);
+        data.forEach(p => renderPokemon(p));
     } catch (error) {
         showErrorMessage("Failed to load Pokémon details");
     }
 }
 
-function createPokemonPromises(pokemonList) {
-    return pokemonList.map(pokemon => {
-        return fetch(pokemon.url)
-            .then(response => {
-                if (!response.ok) throw new Error(`Failed to load ${pokemon.name}`);
-                return response.json();
-            });
-    });
-}
-
-function renderPokemonCollection(pokemonData) {
-    pokemonData.forEach(pokemon => {
-        renderPokemon(pokemon);
-    });
-}
-
-async function fetchPokemonDetails(pokemonId) {
+async function fetchPokemonDetails(id) {
     try {
-        const response = await fetch(`${API_URL}${pokemonId}`);
-        if (!response.ok) throw new Error('Pokémon not found');
-        return await response.json();
+        const res = await fetch(`${API_URL}${id}`);
+        if (!res.ok) throw new Error('Pokémon not found');
+        return await res.json();
     } catch (error) {
         console.error('Error fetching Pokémon details:', error);
         throw error;
@@ -117,33 +100,27 @@ async function fetchPokemonDetails(pokemonId) {
 
 async function fetchAllPokemonNames() {
     try {
-        const totalCount = await fetchPokemonCount();
-        await fetchAndProcessAllNames(totalCount);
+        const count = await fetchPokemonCount();
+        await fetchAndProcessAllNames(count);
     } catch (error) {
         console.error('Error fetching Pokémon names:', error);
     }
 }
 
 async function fetchPokemonCount() {
-    const countResponse = await fetch(`${API_URL}`);
-    if (!countResponse.ok) throw new Error('Failed to fetch Pokémon count');
-    
-    const countData = await countResponse.json();
-    return countData.count;
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error('Failed to fetch Pokémon count');
+    const data = await res.json();
+    return data.count;
 }
 
-async function fetchAndProcessAllNames(totalCount) {
-    const response = await fetch(`${API_URL}?limit=${totalCount}`);
-    if (!response.ok) throw new Error('Failed to load Pokémon names');
-    
-    const data = await response.json();
-    processAllPokemonNames(data.results);
-}
-
-function processAllPokemonNames(results) {
-    allPokemonNames = results.map(pokemon => ({
-        name: formatPokemonName(pokemon.name),
-        id: extractPokemonId(pokemon.url)
+async function fetchAndProcessAllNames(count) {
+    const res = await fetch(`${API_URL}?limit=${count}`);
+    if (!res.ok) throw new Error('Failed to load Pokémon names');
+    const data = await res.json();
+    allPokemonNames = data.results.map(p => ({
+        name: formatPokemonName(p.name),
+        id: extractPokemonId(p.url)
     }));
 }
 
