@@ -11,6 +11,9 @@ function renderPokemon(pokemonData, replace = false) {
     }
     
     attachCardClickHandlers();
+    
+    // Check card count after rendering
+    setTimeout(checkCardCountAndToggleButtons, 100);
 }
 
 function attachCardClickHandlers() {

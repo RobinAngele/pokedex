@@ -140,3 +140,40 @@ function attachOverlayClickHandler(overlay) {
         }
     });
 }
+
+/**
+ * Checks number of cards and toggles appropriate buttons
+ */
+function checkCardCountAndToggleButtons() {
+    const pokemonCards = document.querySelectorAll('.pokemon-card');
+    const loadMoreButton = document.getElementById('load-more');
+    const backButton = document.getElementById('back-button');
+    
+    if (!loadMoreButton || !backButton) return;
+    
+    // If only one card, we're showing a single Pokémon from search
+    if (pokemonCards.length === 1) {
+        loadMoreButton.classList.add('hidden');
+        backButton.classList.remove('hidden');
+    } else {
+        // Multiple cards, show load more button
+        loadMoreButton.classList.remove('hidden');
+        backButton.classList.add('hidden');
+    }
+}
+
+/**
+ * Reset view to show all Pokémon
+ */
+function resetToInitialView() {
+    // Clear container and reset search
+    const pokemonContainer = document.getElementById('pokemon-container');
+    const searchInput = document.getElementById('search-bar');
+    
+    if (pokemonContainer) pokemonContainer.innerHTML = '';
+    if (searchInput) searchInput.value = '';
+    
+    // Reset offset and load initial Pokémon
+    currentOffset = 0;
+    loadInitialPokemon();
+}
