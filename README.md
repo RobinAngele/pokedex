@@ -6,6 +6,7 @@
 ![REST API](https://img.shields.io/badge/REST_API-FF6C37?style=flat&logo=postman&logoColor=white)
 
 An interactive Pokédex web app fetching live Pokémon data from the [PokéAPI](https://pokeapi.co/). Search, browse, and explore hundreds of Pokémon with a responsive, card-based UI.
+🔗 Live Demo : https://robinangele.github.io/pokedex/
 
 ## ✨ Features
 
