@@ -1,56 +1,61 @@
-# Pokedex Project
+# 🎮 Pokédex
 
-Welcome to the Pokedex Project! This application is designed to provide users with an interactive experience to explore various Pokémon, featuring a visually appealing interface and responsive design.
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)
+![REST API](https://img.shields.io/badge/REST_API-FF6C37?style=flat&logo=postman&logoColor=white)
 
-## Features
+An interactive Pokédex web app fetching live Pokémon data from the [PokéAPI](https://pokeapi.co/). Search, browse, and explore hundreds of Pokémon with a responsive, card-based UI.
 
-- **Pokémon Cards**: Each Pokémon is displayed in a card format, showcasing its name, image, and type.
-- **Loading Screen**: A loading screen is displayed while Pokémon data is being fetched from the API.
-- **Responsive Design**: The application is fully responsive, ensuring a seamless experience on devices of all sizes.
-- **Search Functionality**: Users can search for specific Pokémon using a search bar.
+## ✨ Features
 
-## Project Structure
+- 🔍 **Live Search** — search any Pokémon by name with real-time suggestions
+- 🃏 **Card Layout** — each Pokémon displayed as a visual card (name, image, type)
+- 📱 **Fully Responsive** — works on mobile, tablet and desktop
+- ⏳ **Loading Animation** — custom Pokéball spinner while fetching data
+- 🧩 **Modular JS** — clean separation: API calls, rendering, utilities
 
-The project is organized into the following directories and files:
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Data | [PokéAPI](https://pokeapi.co/) (REST) |
+| Logic | Vanilla JavaScript (ES6+) |
+| Styling | CSS3 with responsive media queries |
+| Markup | HTML5 |
+
+## 📁 Project Structure
 
 ```
-pokedex-project
-├── css
-│   ├── style.css           # Main styles for the application
-│   ├── pokemon-cards.css   # Styles specific to Pokémon cards
-│   └── responsive.css      # Media queries for responsive design
-├── js
-│   ├── app.js              # Main JavaScript file for app initialization
-│   ├── api.js              # Functions to interact with the Pokédex API
-│   ├── render.js           # Functions to render Pokémon cards
-│   └── utils.js            # Utility functions used throughout the app
-├── assets
-│   ├── fonts               # Directory for font files
-│   └── icons               # Directory for icon files
-├── index.html              # Main HTML file for the application
-├── .gitignore              # Specifies files to be ignored by Git
-└── README.md               # Documentation for the project
+├── css/
+│   ├── style.css           # Main styles
+│   ├── pokemon-cards.css   # Pokémon card styles
+│   └── responsive.css      # Media queries
+├── js/
+│   ├── app.js              # App initialization
+│   ├── api.js              # PokéAPI interaction
+│   ├── render.js           # Card rendering
+│   └── utils.js            # Helper functions
+├── assets/
+│   ├── fonts/              # Custom fonts
+│   └── icons/              # Icons & favicon
+├── index.html              # Entry point
+└── README.md
 ```
 
-## Setup Instructions
+## 🚀 Quick Start
 
-1. **Clone the Repository**: 
-   ```
-   git clone <repository-url>
-   ```
+```bash
+git clone https://github.com/RobinAngele/pokedex.git
+cd pokedex
+# Open index.html in your browser — no build step needed!
+```
 
-2. **Navigate to the Project Directory**: 
-   ```
-   cd pokedex-project
-   ```
+Or serve locally:
+```bash
+npx serve .
+```
 
-3. **Open the Project**: Open `index.html` in your web browser to view the application.
+---
 
-4. **Install Dependencies**: If there are any dependencies, install them as per the instructions provided in the respective files.
-
-## Additional Notes
-
-- Ensure you have a stable internet connection to fetch Pokémon data from the API.
-- Feel free to contribute to the project by submitting pull requests or reporting issues.
-
-Happy coding! Enjoy exploring the world of Pokémon!
+> Built as a front-end portfolio project. PRs and suggestions welcome!
